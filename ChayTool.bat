@@ -3,12 +3,14 @@ chcp 65001 >nul
 title Tool Test Tu Dong
 rem =====================================================================================================
 rem  Chạy Tool Test Tự Động từ mã nguồn — bấm đúp file này.
-rem  Lần đầu: tự cài Python (nếu máy chưa có) + thư viện vào thư mục .venv bên cạnh (mất 1–3 phút, cần mạng).
+rem  Lần đầu: tự cài Python (nếu máy chưa có) + thư viện vào %LOCALAPPDATA%\ToolTestTuDong\venv (1–3 phút, cần mạng).
+rem  (để ở đường dẫn ngắn: thư viện playwright có đường dẫn rất sâu, Windows giới hạn 260 ký tự)
 rem  Các lần sau: mở tool ngay.
 rem =====================================================================================================
 cd /d "%~dp0"
-set "VPY=%~dp0.venv\Scripts\python.exe"
-set "VPYW=%~dp0.venv\Scripts\pythonw.exe"
+set "VENV=%LOCALAPPDATA%\ToolTestTuDong\venv"
+set "VPY=%VENV%\Scripts\python.exe"
+set "VPYW=%VENV%\Scripts\pythonw.exe"
 
 if exist "%VPY%" (
   "%VPY%" -c "import playwright, openpyxl, PIL" >nul 2>nul && goto run
@@ -30,8 +32,9 @@ if not defined PY (
 if not defined PY goto nopython
 echo     Dung: %PY%
 
-echo [2/3] Tao moi truong rieng .venv ...
-%PY% -m venv "%~dp0.venv" || (echo [LOI] Khong tao duoc .venv & pause & exit /b 1)
+echo [2/3] Tao moi truong rieng: %VENV%
+if exist "%VENV%" rmdir /s /q "%VENV%"
+%PY% -m venv "%VENV%" || (echo [LOI] Khong tao duoc moi truong Python & pause & exit /b 1)
 
 echo [3/3] Cai thu vien (playwright, openpyxl, pillow) - khoang 45 MB, vui long doi...
 "%VPY%" -m pip install --disable-pip-version-check -q -r requirements.txt || (
