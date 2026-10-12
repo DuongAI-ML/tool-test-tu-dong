@@ -2,6 +2,30 @@
 
 Bạn chỉ cần **nhập URL web**. Tool tự dò trang, bạn chọn làm Test Scenario hay Test Case, chọn cột và nhóm test, tool tự sinh, tự chạy trên Edge/Chrome thật của máy rồi xuất Excel theo mẫu cột của công ty. Ngoài ra vẫn chạy được theo file test case Excel viết tay.
 
+## Tải về và chạy (Windows 10/11)
+
+Máy cần có **Microsoft Edge** (Windows nào cũng có sẵn) hoặc Google Chrome. Chọn 1 trong 2 cách:
+
+### Cách 1 — Bản EXE, không cần cài gì (khuyên dùng)
+
+1. Vào **[Releases](https://github.com/DuongAI-ML/tool-test-tu-dong/releases/latest)**, tải file `ToolTestTuDong_v…_Windows.zip` (khoảng 57 MB).
+2. Chuột phải file zip → **Extract All** (giải nén). Đừng chạy thẳng trong file zip.
+3. Mở thư mục `ToolTestTuDong` → bấm đúp **ToolTestTuDong.exe**.
+   Nếu Windows hiện "Windows protected your PC": bấm **More info** → **Run anyway** (tool chưa có chữ ký số, không phải virus).
+
+### Cách 2 — Chạy từ mã nguồn (nhẹ để tải, dễ cập nhật)
+
+1. Bấm nút xanh **Code → Download ZIP** ở trang này rồi giải nén. Hoặc nếu máy có git:
+   ```bat
+   git clone https://github.com/DuongAI-ML/tool-test-tu-dong.git
+   ```
+2. Bấm đúp **ChayTool.bat**.
+   - Lần đầu: tool tự cài Python (nếu máy chưa có, qua winget) và thư viện (~45 MB) vào `%LOCALAPPDATA%\ToolTestTuDong\venv`. Mất khoảng 1–3 phút, cần mạng.
+   - Các lần sau: mở tool ngay.
+3. Cập nhật bản mới: `git pull` (hoặc tải ZIP mới) rồi bấm lại ChayTool.bat.
+
+Không cần lệnh `playwright install`: tool điều khiển Edge / Chrome có sẵn trên máy.
+
 ## Dành cho người dùng (tester)
 
 ### Tab 🌐 Test web (cách dùng chính) — 1 trang, làm từ trên xuống
@@ -107,4 +131,4 @@ Tab này làm theo đúng cách tester làm việc thật:
   - `python tests/smoke_api.py <port>`: chế độ Excel.
   - `python tests/scan_demo.py <port>`: chế độ quét URL trên web demo.
   - `python tests/scenario_map.py <port>`: sinh / ghép Test Scenario trên web demo.
-- **Chưa build exe.** Chỉ build khi được yêu cầu, bằng PyInstaller onedir, kèm thư mục `web/` và `demo/`.
+- Đóng gói: `build_exe.bat` → `dist\ToolTestTuDong\` (PyInstaller onedir, không kèm trình duyệt) và `dist\ToolTestTuDong_v<phiên bản>_Windows.zip` để đưa lên GitHub Releases. Đổi `VERSION` trong `app.py` trước khi build bản mới.
