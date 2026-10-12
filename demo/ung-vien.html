@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ứng viên — HR Demo</title>
+<link rel="stylesheet" href="demo.css">
+<script>if (!/(^|; )hr_session=/.test(document.cookie)) location.replace('login.html');</script>
+<style>
+  th.sortable { cursor: pointer; user-select: none; }
+  th.sortable::after { content: ' ⇅'; color: #94a3b8; }
+  .adv { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 12px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .switch { display: inline-flex; align-items: center; gap: 8px; font-weight: 400; margin: 0; }
+  .switch input { width: auto; }
+</style>
+</head>
+<body>
+<header class="top">
+  <span class="logo">HR Demo</span>
+  <span class="user">Xin chào, <b>Admin</b></span>
+  <a href="#" id="logout">Đăng xuất</a>
+</header>
+<div class="layout">
+  <nav class="side">
+    <a href="don-hang.html">Đơn hàng tuyển dụng</a>
+    <a href="ung-vien.html" class="active">Ứng viên</a>
+  </nav>
+  <main>
+    <div class="page-head"><h1>Ứng viên</h1>
+      <button class="btn" id="btn-adv" aria-expanded="false" aria-controls="adv">Bộ lọc nâng cao ▾</button></div>
+    <div class="adv" id="adv" hidden>
+      <label class="inline">Kinh nghiệm từ <input id="exp-min" type="number" min="0" max="40" style="width:80px"></label>
+      <label class="switch"><input type="checkbox" role="switch" id="sw-hide"> Ẩn ứng viên đã từ chối</label>
+    </div>
+    <div class="table-wrap">
+      <table id="bang-ung-vien">
+        <thead><tr><th class="sortable" data-k="name">Họ tên</th><th class="sortable" data-k="pos">Vị trí ứng tuyển</th>
+          <th class="sortable" data-k="exp">Kinh nghiệm (năm)</th><th class="sortable" data-k="date">Ngày nộp</th><th>Trạng thái</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </main>
+</div>
+<script>
+const DATA = [
+  ['Nguyễn Văn An', 'Lập trình viên Java', 3, '05/10/2026', 'Đang xét'],
+  ['Trần Thị Bình', 'Tester (QC)', 2, '01/10/2026', 'Phỏng vấn'],
+  ['Lê Hoàng Cường', 'DevOps Engineer', 6, '28/09/2026', 'Từ chối'],
+  ['Phạm Minh Dũng', 'Kế toán tổng hợp', 4, '03/10/2026', 'Đang xét'],
+  ['Võ Thu Hà', 'Thiết kế UI/UX', 1, '07/10/2026', 'Phỏng vấn'],
+  ['Đặng Quốc Khánh', 'Nhân viên kinh doanh', 5, '30/09/2026', 'Từ chối'],
+].map(([name, pos, exp, date, st]) => ({ name, pos, exp, date, st }));
+let sortK = null, dir = 1;
+const key = (o, k) => k === 'date' ? o.date.split('/').reverse().join('') : o[k];
+function render() {
+  let rows = DATA.slice();
+  if (document.getElementById('sw-hide').checked) rows = rows.filter((o) => o.st !== 'Từ chối');
+  const min = Number(document.getElementById('exp-min').value || 0);
+  rows = rows.filter((o) => o.exp >= min);
+  if (sortK) rows.sort((a, b) => { const x = key(a, sortK), y = key(b, sortK); return (typeof x === 'number' ? x - y : String(x).localeCompare(String(y), 'vi')) * dir; });
+  document.querySelector('#bang-ung-vien tbody').innerHTML = rows.map((o) => `<tr><td>${o.name}</td><td>${o.pos}</td><td>${o.exp}</td><td>${o.date}</td><td>${o.st}</td></tr>`).join('');
+}
+document.querySelectorAll('th.sortable').forEach((th) => th.onclick = () => {
+  const k = th.dataset.k; dir = sortK === k ? -dir : 1; sortK = k;
+  document.querySelectorAll('th.sortable').forEach((x) => x.removeAttribute('aria-sort'));
+  th.setAttribute('aria-sort', dir > 0 ? 'ascending' : 'descending'); render();
+});
+const adv = document.getElementById('btn-adv');
+adv.onclick = () => { const open = adv.getAttribute('aria-expanded') !== 'true'; adv.setAttribute('aria-expanded', String(open)); document.getElementById('adv').hidden = !open; };
+document.getElementById('sw-hide').onchange = render;
+document.getElementById('exp-min').oninput = render;
+document.getElementById('logout').onclick = (e) => { e.preventDefault(); document.cookie = 'hr_session=; path=/; max-age=0'; location.href = 'login.html'; };
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+TOOL TEST TỰ ĐỘNG — HƯỚNG DẪN NHANH
+====================================
+
+CÀI ĐẶT: không cần cài gì.
+  1. Giải nén file .zip (chuột phải → Extract All / Giải nén tất cả).
+     ĐỪNG chạy thẳng trong file .zip.
+  2. Mở thư mục ToolTestTuDong → bấm đúp ToolTestTuDong.exe.
+  3. Tool mở ra trong 1 cửa sổ Edge. Muốn tạo lối tắt: chuột phải ToolTestTuDong.exe → Send to → Desktop.
+
+Máy cần: Windows 10/11 có Microsoft Edge (máy Windows nào cũng có sẵn) hoặc Google Chrome.
+Không cần Python, không cần Internet (trừ khi trang web cần test nằm trên Internet).
+
+Nếu Windows hiện "Windows protected your PC" (SmartScreen):
+  bấm "More info" / "Thông tin bổ sung" → "Run anyway" / "Vẫn chạy".
+  (Do tool chưa có chữ ký số của hãng, không phải virus.)
+
+CÁCH DÙNG (tab "Test web", làm từ trên xuống):
+  1. Chọn Test Scenario hoặc Test Case.
+  2. Chọn / đổi tên / sắp xếp cột.
+  3. Nhập địa chỉ web → chọn cách đăng nhập → bấm "Dò trang".
+     Muốn thử trước: bấm "Dùng thử web demo" (tài khoản admin@demo.vn / 123456).
+  4. Tick các nhóm test.
+  5. Xem trước, tick các dòng cần.
+  6. Bấm "Sinh file Excel mới" hoặc "Điền vào file Excel sẵn có".
+     Test Case: bấm "▶ Chạy test" để tool tự chạy và ghi Kết quả test Lần 1/2/3.
+
+DỮ LIỆU CỦA TOOL nằm ở: %LOCALAPPDATA%\ToolTestTuDong
+  (cài đặt, kết quả các lần chạy, phiên đăng nhập; KHÔNG lưu mật khẩu).
+  Xóa thư mục này = đưa tool về như mới.
+
+TẮT TOOL: bấm nút ⏻ góc trên bên phải.
+CẬP NHẬT bản mới: giải nén bản mới đè lên thư mục cũ (dữ liệu vẫn giữ nguyên).

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Đơn hàng tuyển dụng — HR Demo</title>
+<link rel="stylesheet" href="demo.css">
+<script>if (!/(^|; )hr_session=/.test(document.cookie)) location.replace('login.html');</script>
+</head>
+<body>
+<header class="top">
+  <button class="hamburger" id="btn-menu" aria-label="Mở menu">☰</button>
+  <span class="logo">HR Demo</span>
+  <span class="user">Xin chào, <b id="user-name">Admin</b></span>
+  <a href="#" id="logout">Đăng xuất</a>
+</header>
+<div class="layout">
+  <nav class="side" id="side">
+    <a href="don-hang.html" class="active">Đơn hàng tuyển dụng</a>
+    <a href="ung-vien.html">Ứng viên</a>
+  </nav>
+  <main>
+    <div class="page-head">
+      <h1>Đơn hàng tuyển dụng</h1>
+      <button class="btn primary" id="btn-create">+ Tạo đơn hàng</button>
+    </div>
+    <div class="filters">
+      <input id="q" type="search" placeholder="Tìm theo mã hoặc vị trí" aria-label="Tìm kiếm">
+      <label class="inline">Trạng thái
+        <select id="f-status">
+          <option value="">Tất cả</option><option>Đang tuyển</option><option>Tạm dừng</option><option>Đã đóng</option>
+        </select>
+      </label>
+      <button class="btn" id="btn-search">Tìm kiếm</button>
+    </div>
+    <div class="table-wrap">
+      <table id="bang-don-hang">
+        <thead><tr><th>Mã đơn</th><th>Vị trí</th><th>Phòng ban</th><th>Số lượng</th><th>Trạng thái</th>
+          <th>Hạn nộp</th><th>Thao tác</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <p class="empty" id="empty" hidden>Không có đơn hàng phù hợp</p>
+    </div>
+    <div class="pager" id="pager"></div>
+  </main>
+</div>
+
+<div class="modal" id="modal" hidden>
+  <form class="modal-box" id="form-order" novalidate role="dialog" aria-labelledby="modal-title">
+    <h2 id="modal-title">Tạo đơn hàng</h2>
+    <label for="o-title">Vị trí tuyển <span class="req">*</span></label>
+    <input id="o-title" maxlength="100">
+    <div class="err" id="e-title"></div>
+    <label for="o-qty">Số lượng <span class="req">*</span></label>
+    <input id="o-qty" type="number">
+    <div class="err" id="e-qty"></div>
+    <label for="o-dept">Phòng ban</label>
+    <select id="o-dept"><option>Phòng IT</option><option>Phòng Kinh doanh</option><option>Phòng Nhân sự</option>
+      <option>Phòng Kế toán</option></select>
+    <label for="o-deadline">Hạn nộp</label>
+    <input id="o-deadline" type="date">
+    <div class="row2">
+      <div><label for="o-score1">Điểm ngành nghề</label><input id="o-score1" type="number" min="0" max="10"></div>
+      <div><label for="o-score2">Điểm kinh nghiệm</label><input id="o-score2" type="number" min="0" max="10"></div>
+      <div><label for="o-total">Tổng điểm</label><input id="o-total" readonly></div>
+    </div>
+    <label for="o-desc">Mô tả</label>
+    <textarea id="o-desc" rows="3"></textarea>
+    <div class="actions">
+      <button type="button" class="btn" id="btn-cancel">Hủy</button>
+      <button type="submit" class="btn" id="btn-draft">Lưu nháp</button>
+      <button type="submit" class="btn primary" id="btn-send">Lưu &amp; Gửi phê duyệt</button>
+    </div>
+  </form>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script src="demo.js"></script>
+</body>
+</html>

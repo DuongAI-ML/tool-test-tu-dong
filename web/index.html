@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="vi" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tool Test Tự Động</title>
+<link rel="icon" href="/web/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/web/style.css">
+</head>
+<body class="notranslate" translate="no">
+<header class="topbar">
+  <div class="brand"><img src="/web/icon.svg" alt=""> Tool Test Tự Động</div>
+  <nav class="tabs" id="tabs">
+    <button data-tab="scan" class="on">🌐 Test web</button>
+    <button data-tab="run">📄 Test theo file Excel</button>
+    <button data-tab="results">📊 Kết quả</button>
+  </nav>
+  <nav class="tabs right" id="tabs2">
+    <button data-tab="settings" data-group="settings columns guide">⚙ Cài đặt</button>
+  </nav>
+  <button class="btn ghost small" id="btn-quit" title="Tắt hẳn tool">⏻</button>
+</header>
+
+<div class="filebar" id="filebar" hidden>
+  <span class="file-ico">📄</span>
+  <span class="file-name" id="file-name"></span>
+  <span class="file-meta" id="file-meta"></span>
+  <span class="modified" id="file-modified" hidden>File đã được sửa sau khi mở → bấm <b>Nạp lại</b></span>
+  <span class="grow"></span>
+  <button class="btn small" id="btn-reload" title="Đọc lại file sau khi bạn sửa trong Excel">⟳ Nạp lại file</button>
+  <button class="btn small" id="btn-open2">📂 Mở file khác</button>
+  <button class="btn small" id="btn-open-excel" title="Mở file này bằng Excel">Mở bằng Excel</button>
+</div>
+
+<!-- ======================================================== TEST WEB: 1 trang cấu hình theo bước -->
+<section class="tab" id="tab-scan">
+  <div class="wiz">
+    <!-- 1 -->
+    <div class="wstep" id="w1">
+      <div class="wh"><span class="wn">1</span><h3>Bạn muốn làm gì?</h3></div>
+      <div class="kinds" id="kinds">
+        <button class="kind" data-kind="scenario"><span class="k-ic">📋</span><span class="k-t"><b>Test Scenario</b>
+          <span class="k-d">Danh sách kịch bản theo LUỒNG: ID · Nhóm · Test Scenario · AC liên quan · Priority — đúng bố cục file mẫu</span></span></button>
+        <button class="kind" data-kind="testcase"><span class="k-ic">🧪</span><span class="k-t"><b>Test Case</b>
+          <span class="k-d">Test case chi tiết theo mẫu công ty (Steps, Kết quả mong đợi…). Tool chạy được và ghi Kết quả test Lần 1/2/3</span></span></button>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="wstep" id="w2">
+      <div class="wh"><span class="wn">2</span><h3>Cột trong file <span class="muted small" id="col-count"></span></h3>
+        <span class="grow"></span>
+        <select id="col-prof" title="Mẫu cột đã lưu"></select>
+        <button class="btn small" id="col-save">💾 Lưu mẫu cột</button>
+        <button class="btn small" id="col-saveas">Lưu thành mẫu mới…</button>
+        <button class="btn small" id="col-reset">Về mặc định</button>
+      </div>
+      <div class="muted small">Sửa tên cho giống file của bạn · kéo <b>⋮⋮</b> hoặc bấm ‹ › để đổi thứ tự · bấm ✕ để bỏ cột.</div>
+      <div class="colchips" id="col-on"></div>
+      <div class="col-add"><span class="muted small">Thêm cột:</span> <span id="col-off"></span></div>
+    </div>
+
+    <!-- 3 -->
+    <div class="wstep" id="w3">
+      <div class="wh"><span class="wn">3</span><h3>Nguồn dữ liệu</h3>
+        <span class="grow"></span>
+        <div class="seg" id="sc-source" hidden><button data-src="auto">🌐 Dò trang web</button>
+          <button data-src="file">📄 Lấy Test Scenario từ file Excel có sẵn</button></div>
+      </div>
+      <div class="row big-row">
+        <input id="sc-url" class="grow url" placeholder="Nhập địa chỉ web cần test — VD: http://192.168.0.136:8080/don-hang">
+        <select id="sc-login" title="Cách đăng nhập">
+          <option value="none">Không cần đăng nhập</option>
+          <option value="manual">Tôi tự đăng nhập / vượt captcha trên trình duyệt</option>
+          <option value="auto">Tool tự đăng nhập</option></select>
+        <button class="btn primary big" id="sc-discover">🔍 Dò trang</button>
+      </div>
+      <div class="row" id="sc-auto" hidden>
+        <input id="sc-user" placeholder="Tài khoản" autocomplete="off">
+        <input id="sc-pass" type="password" placeholder="Mật khẩu (không lưu)" autocomplete="new-password">
+        <input id="sc-lurl" class="grow" placeholder="Trang đăng nhập (để trống = địa chỉ ở trên)">
+      </div>
+      <div class="muted small" id="sc-status"></div>
+      <div id="sc-diag"></div>
+      <div class="filerow" id="sc-file-row" hidden>
+        <span>📄 <b id="sc-file-name">Chưa chọn file</b></span>
+        <button class="btn small" id="sc-import">📂 Chọn file Test Scenario…</button>
+        <span class="muted small">Tool đọc cột ID, Nhóm, Test Scenario (AC liên quan, Priority nếu có) rồi sinh test case cho từng scenario.</span>
+      </div>
+      <div id="scan-progress-host"></div>
+    </div>
+
+    <!-- 4 -->
+    <div class="wstep" id="w4">
+      <div class="wh"><span class="wn">4</span><h3>Nhóm test muốn sinh <span class="muted small" id="grp-count"></span></h3>
+        <span class="grow"></span>
+        <button class="btn small" data-preset="seven">7 nhóm chính</button>
+        <button class="btn small" data-preset="all">Chọn tất cả</button>
+        <button class="btn small" data-preset="none">Bỏ chọn</button>
+      </div>
+      <div class="gcards" id="grp-list"></div>
+      <label class="chk"><input type="checkbox" id="g-suggest"><span>Thêm scenario <b>gợi ý cần test tay</b> theo tính năng dò được (bộ lọc, nút Làm mới, Lưu nháp, Xóa, Nhập file…)</span></label>
+      <div class="row wrap adv-links">
+        <span class="muted small">Cấu hình thêm:</span>
+        <button class="btn small" data-adv="general">⚙ Phạm vi dò &amp; chạy</button>
+        <button class="btn small" data-adv="business">Luật Business rule…</button>
+        <button class="btn small" data-adv="permission">Ma trận phân quyền…</button>
+        <button class="btn small" data-adv="state">Luồng trạng thái…</button>
+        <button class="btn small" data-adv="clicks">Nút cho bấm thử…</button>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="wstep" id="w5">
+      <div class="wh"><span class="wn">5</span><h3>Xem trước <span class="muted small" id="pv-count"></span></h3>
+        <span class="grow"></span>
+        <select id="pv-nhom"><option value="">Nhóm: tất cả</option></select>
+        <select id="pv-mode"><option value="">Cách test: tất cả</option><option value="auto">Tool tự kiểm tra</option><option value="Tay">✋ Cần test tay</option></select>
+      </div>
+      <div class="muted small" id="pv-hint"></div>
+      <div class="pv-wrap"><table class="pv" id="pv-table"></table></div>
+      <div id="pv-empty" class="pv-empty"></div>
+    </div>
+
+    <!-- 6 -->
+    <div class="wstep" id="w6">
+      <div class="wh"><span class="wn">6</span><h3>Xuất file</h3></div>
+      <div class="grid2">
+        <label>Tên file <input id="x2-pattern" placeholder="TestScenario_{man_hinh}_{ngay}"></label>
+        <label>Thư mục lưu<span class="row" style="margin:4px 0 0"><input id="x2-folder" class="grow"><button class="btn" id="x2-pick">📁 Chọn…</button></span></label>
+      </div>
+      <div class="muted small">Biến: <code>{man_hinh}</code> <code>{ngay}</code> <code>{gio}</code> <code>{du_an}</code> <code>{nguoi_test}</code> — sẽ lưu thành <b id="x2-preview"></b></div>
+      <div class="row wrap" id="x2-tc" hidden>
+        <label class="inline">Ghi kết quả vào cột <select id="x2-round"><option value="1">Kết quả test (Lần 1)</option><option value="2">Kết quả test (Lần 2)</option><option value="3">Kết quả test (Lần 3)</option></select></label>
+        <label class="chk" id="x2-withrun-wrap" hidden><input type="checkbox" id="x2-withrun" checked><span id="x2-runinfo"></span></label>
+      </div>
+      <div class="bigbtns">
+        <button class="btn primary huge" id="x2-new">📄 Sinh file Excel mới</button>
+        <button class="btn huge" id="x2-fill">📥 Điền vào file Excel sẵn có</button>
+        <button class="btn huge runbtn" id="x2-run" hidden>▶ Chạy test</button>
+      </div>
+      <div id="x2-done"></div>
+      <div id="scan-progress-host2"></div>
+    </div>
+  </div>
+</section>
+<div class="modal" id="adv" hidden><div class="modal-box wide" id="adv-box">
+  <div class="mh"><h2>⚙ Cấu hình thêm</h2><button class="btn" id="adv-close">Xong</button></div>
+  <div class="adv-layout">
+    <nav class="adv-nav" id="adv-nav">
+      <button data-p="general" class="on">Phạm vi dò &amp; chạy</button>
+      <button data-p="business">Business rule</button>
+      <button data-p="permission">Phân quyền</button>
+      <button data-p="state">Luồng trạng thái</button>
+      <button data-p="clicks">Nút cho bấm thử</button>
+    </nav>
+    <div class="adv-body" id="adv-body"></div>
+  </div>
+</div></div>
+<div class="modal" id="fillm" hidden><div class="modal-box wide" id="fillm-box"></div></div>
+
+<!-- ======================================================== CHẠY THEO FILE EXCEL -->
+<section class="tab" id="tab-run" hidden>
+  <div class="empty-state" id="empty-state" hidden>
+    <div class="drop" id="drop">
+      <h2>Bắt đầu: mở file Excel test case</h2>
+      <p>Kéo-thả file <b>.xlsx</b> vào đây, hoặc:</p>
+      <div class="row center">
+        <button class="btn primary big" id="btn-open">📂 Mở file Excel</button>
+      </div>
+      <p class="muted">Chưa có file theo mẫu?</p>
+      <div class="row center">
+        <button class="btn" id="btn-tpl-sample">✨ Tạo file mẫu CÓ VÍ DỤ (chạy thử ngay trên web demo)</button>
+        <button class="btn" id="btn-tpl-blank">📄 Tạo file mẫu trống</button>
+      </div>
+      <div id="recent"></div>
+    </div>
+  </div>
+
+  <div class="run-layout" id="run-layout" hidden>
+    <div class="panel pick">
+      <div class="pick-tools">
+        <input id="f-search" type="search" placeholder="🔍 Tìm theo mã, tiêu đề, module…">
+        <select id="f-module"><option value="">Module: tất cả</option></select>
+        <select id="f-type"><option value="">Loại test: tất cả</option></select>
+        <select id="f-prio"><option value="">Priority: tất cả</option></select>
+        <select id="f-mode"><option value="">Cách test: tất cả</option><option>Tự động</option>
+          <option>Bán tự động</option><option>Tay</option></select>
+      </div>
+      <div class="pick-actions">
+        <label class="chk"><input type="checkbox" id="chk-all"><span>Chọn tất cả (đang hiện)</span></label>
+        <button class="btn link" id="btn-expand">Mở rộng tất cả</button>
+        <button class="btn link" id="btn-collapse">Thu gọn</button>
+        <span class="grow"></span>
+        <span class="legend"><span class="mode m-auto">Tự động</span><span class="mode m-semi">⚠ Bán tự động</span>
+          <span class="mode m-manual">✋ Test tay</span></span>
+      </div>
+      <div class="warnbox" id="wb-warn" hidden></div>
+      <div class="tree" id="tree"></div>
+    </div>
+
+    <div class="panel side">
+      <h3>Cấu hình lần chạy</h3>
+      <label>URL web cần test <input id="o-baseurl" placeholder="Để trống = lấy base_url trong sheet Env"></label>
+      <label>Môi trường <select id="o-env"></select></label>
+      <div class="env-vars" id="env-vars"></div>
+      <label>Trình duyệt
+        <select id="o-browser"><option value="edge">Microsoft Edge</option><option value="chrome">Google Chrome</option>
+          <option value="firefox">Firefox (cần cài thêm)</option></select></label>
+      <label>Tốc độ
+        <select id="o-speed"><option value="nhanh">Nhanh</option><option value="vua">Vừa (dễ theo dõi)</option>
+          <option value="cham">Chậm</option></select></label>
+      <label class="chk"><input type="checkbox" id="o-headless"><span>Chạy ẩn (không hiện trình duyệt)</span></label>
+      <label class="chk"><input type="checkbox" id="o-shot"><span>Chụp ảnh mọi bước</span></label>
+      <label class="chk"><input type="checkbox" id="o-video"><span>Quay video mỗi TC</span></label>
+
+      <div class="sel-summary" id="sel-summary"></div>
+      <button class="btn primary big full" id="btn-run" disabled>▶ Chạy test</button>
+      <div id="run-progress-host">
+
+      <div class="progress-box" id="progress" hidden>
+        <div class="prog-head"><b id="prog-state">Đang chạy</b><span id="prog-count"></span></div>
+        <div class="bar"><div id="prog-bar"></div></div>
+        <div class="current" id="prog-current"></div>
+        <div class="chips" id="prog-chips"></div>
+        <ol class="live" id="live"></ol>
+        <div class="row">
+          <button class="btn danger" id="btn-stop">■ Dừng</button>
+          <button class="btn primary" id="btn-goto-results" hidden>Xem kết quả &amp; xuất file →</button>
+          <button class="btn" id="btn-manual-reopen" hidden>✋ Mở lại hộp kiểm tra tay</button>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================== KẾT QUẢ -->
+<section class="tab" id="tab-results" hidden>
+  <div class="res-layout">
+    <div class="panel">
+      <div class="row">
+        <h3 class="grow">Kết quả lần chạy</h3>
+        <select id="r-run"></select>
+      </div>
+      <div class="cards" id="r-cards"></div>
+      <div class="row filters-st" id="r-filter">
+        <button class="btn small on" data-st="">Tất cả</button><button class="btn small" data-st="Fail">Fail</button>
+        <button class="btn small" data-st="Blocked">Blocked</button>
+        <button class="btn small" data-st="Chưa test">Chưa test</button><button class="btn small" data-st="Pass">Pass</button>
+      </div>
+      <div id="r-list" class="r-list"></div>
+    </div>
+    <div class="panel export">
+      <h3>Xuất file kết quả</h3>
+      <label>Tên file Excel
+        <input id="x-pattern" placeholder="KetQua_{du_an}_{ngay}_{gio}"></label>
+      <div class="vars" id="x-vars"></div>
+      <div class="preview">Sẽ lưu thành: <b id="x-preview">…</b> <span class="warn-text" id="x-exists" hidden>
+        (đã có file trùng tên)</span></div>
+      <label>Thư mục lưu</label>
+      <div class="row"><input id="x-folder" class="grow"><button class="btn" id="x-pick">📁 Chọn…</button></div>
+      <label>Ghi kết quả vào cột
+        <select id="x-round"><option value="1">Kết quả test (Lần 1)</option><option value="2">Kết quả test (Lần 2)</option>
+          <option value="3">Kết quả test (Lần 3)</option></select></label>
+      <label class="chk"><input type="checkbox" id="x-html"><span>Xuất thêm báo cáo HTML (xem trên trình duyệt)</span></label>
+      <label class="chk"><input type="checkbox" id="x-embed"><span>Nhúng ảnh chụp vào file Excel (file sẽ nặng hơn)</span></label>
+      <label class="chk"><input type="checkbox" id="x-writeback"><span>Ghi kết quả vào <b>bản sao</b> file test case gốc
+        (file gốc giữ nguyên)</span></label>
+      <label class="chk"><input type="checkbox" id="x-open"><span>Mở file sau khi xuất</span></label>
+      <p class="muted small">Các cột trong file Excel = các cột đang tick ở <a href="#" data-goto="columns">Cài đặt › Cột
+        báo cáo</a>.</p>
+      <button class="btn primary big full" id="x-go">⬇ Xuất file Excel</button>
+      <div id="x-done"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================== CẤU HÌNH CỘT -->
+<section class="tab" id="tab-columns" hidden>
+  <div class="subtabs setnav"><button data-goto="settings">Chung</button><button data-goto="columns">Cột báo cáo</button>
+    <button data-goto="guide">Hướng dẫn</button></div>
+  <div class="panel">
+    <div class="row wrap">
+      <label class="inline">Mẫu cột <select id="c-profile"></select></label>
+      <button class="btn primary" id="c-save">💾 Lưu</button>
+      <button class="btn" id="c-saveas">Lưu thành mẫu mới…</button>
+      <button class="btn" id="c-delete">Xóa mẫu</button>
+      <span class="grow"></span>
+      <button class="btn" id="c-tpl">📄 Tạo file Excel trống theo các cột này</button>
+    </div>
+    <p class="muted">Tick cột nào thì cột đó có trong <b>file mẫu</b> và <b>file báo cáo</b>. Có thể đổi tên cột cho
+      giống file của bạn — khi đọc file, tool nhận cột theo cả tên mặc định, tên bạn đặt và các tên thường gặp
+      (VD "Kết quả mong đợi" = "Expected result"). Kéo ↑↓ để đổi thứ tự.</p>
+    <div class="grid3">
+      <label>Cách ghi các bước trong sheet TestCase
+        <select id="c-layout"><option value="merged">Gộp các bước vào 1 ô (1. … 2. … 3. …) — như file của tester</option>
+          <option value="rows">Mỗi bước 1 dòng</option></select></label>
+      <label>Dòng nhóm trong sheet TestCase
+        <select id="c-sections"><option value="1">Có — theo Test Scenario (VD: TS_DHTD_005 — Kiểm tra chức năng tìm kiếm…)</option><option value="0">Không</option></select></label>
+      <label>Bảng riêng cho từng loại test
+        <select id="c-matrices"><option value="1">Có — Ma trận Validation, Bảng quyết định, Ma trận phân quyền, Bảng chuyển trạng thái…</option>
+          <option value="0">Không</option></select></label>
+    </div>
+    <div class="subtabs" id="c-kind">
+      <button data-kind="scenario">Test Scenario</button><button data-kind="testcase" class="on">Test Case</button>
+    </div>
+    <div class="row">
+      <button class="btn small" id="c-all">Bật tất cả</button>
+      <button class="btn small" id="c-none">Tắt tất cả (trừ cột bắt buộc)</button>
+      <button class="btn small" id="c-default">Về mặc định</button>
+      <span class="grow"></span><span class="muted small" id="c-count"></span>
+    </div>
+    <div class="cols-wrap"><table class="cols" id="c-table"></table></div>
+    <div id="c-mapping"></div>
+  </div>
+</section>
+
+<!-- ======================================================== CÀI ĐẶT -->
+<section class="tab" id="tab-settings" hidden>
+  <div class="subtabs setnav"><button data-goto="settings">Chung</button><button data-goto="columns">Cột báo cáo</button>
+    <button data-goto="guide">Hướng dẫn</button></div>
+  <div class="panel narrow">
+    <h3>Cài đặt</h3>
+    <label>Tên người test (ghi vào báo cáo) <input id="s-tester"></label>
+    <label>Tên dự án (biến {du_an}; để trống = tên file Excel) <input id="s-project"></label>
+    <label>Kích thước màn hình mặc định <input id="s-size" placeholder="1366x768"></label>
+    <label>Thời gian chờ tối đa mỗi bước (giây) <input id="s-timeout" type="number" min="1" max="120"></label>
+    <label class="chk"><input type="checkbox" id="s-autofirst"><span>Chạy các case tự động trước, case bán tự động / test tay
+      để sau cùng</span></label>
+    <label class="chk"><input type="checkbox" id="s-stoponfail"><span>Khi 1 bước lỗi thì bỏ qua các bước còn lại của TC
+      đó</span></label>
+    <button class="btn primary" id="s-save">💾 Lưu cài đặt</button>
+    <hr>
+    <p>Web demo để tập: <a href="#" id="s-demo"></a></p>
+    <p>Thư mục dữ liệu của tool: <a href="#" id="s-data"></a></p>
+    <p class="muted small" id="s-version"></p>
+  </div>
+</section>
+
+<!-- ======================================================== HƯỚNG DẪN -->
+<section class="tab" id="tab-guide" hidden>
+  <div class="subtabs setnav"><button data-goto="settings">Chung</button><button data-goto="columns">Cột báo cáo</button>
+    <button data-goto="guide">Hướng dẫn</button></div>
+  <div class="panel guide">
+    <h3>Dùng nhanh trong 4 bước</h3>
+    <ol>
+      <li><b>Viết test case trong Excel</b> — sheet <i>TestCase</i>, <b>mỗi bước một dòng</b>. Dòng đầu của TC ghi TC ID và
+        thông tin chung; các dòng bước sau để trống TC ID.</li>
+      <li>Ở mỗi bước, điền thêm 3 cột cho tool chạy: <b>Hành động</b> (chọn trong danh sách bên dưới),
+        <b>Đối tượng</b> (ô/nút cần thao tác), <b>Giá trị</b>. Bước nào bỏ trống Hành động = <b>test tay</b>.</li>
+      <li>Mở file trong tool → tick các TC cần chạy → bấm <b>Chạy test</b>. Case test tay / bán tự động: tool sẽ
+        <b>dừng lại và hỏi bạn</b> Pass/Fail.</li>
+      <li>Tab <b>Kết quả &amp; Xuất file</b> → đặt tên file → <b>Xuất file Excel</b>.</li>
+    </ol>
+    <div class="row"><button class="btn" id="g-sample">✨ Tạo file mẫu có ví dụ &amp; mở luôn</button>
+      <button class="btn" id="g-demo">🌐 Mở web demo</button></div>
+    <h3>Cách ghi cột Đối tượng</h3>
+    <ul>
+      <li>Ghi như người đọc: <code>Ô Email</code>, <code>Nút "Đăng nhập"</code>, <code>Link "Quên mật khẩu"</code>,
+        <code>Dropdown Phòng ban</code>, <code>Checkbox Ghi nhớ</code>, <code>Tiêu đề "Đơn hàng"</code>. Tool tự tìm
+        theo nhãn, placeholder, chữ trên nút…</li>
+      <li>Nhiều phần tử giống nhau: thêm <code>#2</code> để lấy cái thứ 2 — VD <code>Nút "Xóa" #2</code>.</li>
+      <li>Phần tử khó tìm: đặt tên trong sheet <b>Elements</b> (Tên → selector CSS/XPath), rồi ghi tên đó vào cột Đối
+        tượng. Hoặc ghi thẳng selector: <code>#email</code>, <code>css=table tr</code>, <code>//button[1]</code>.</li>
+    </ul>
+    <h3>Biến</h3>
+    <ul>
+      <li><code>${base_url}</code>, <code>${user}</code>… lấy từ sheet <b>Env</b> theo môi trường đang chọn.</li>
+      <li>Cột <b>Test data</b> ghi <code>email=a@b.vn; sdt=0901234567</code> → dùng <code>${email}</code>,
+        <code>${sdt}</code> trong TC đó.</li>
+      <li>Có sẵn: <code>${ngau_nhien}</code> (số ngẫu nhiên, giữ nguyên trong 1 TC), <code>${hom_nay}</code>,
+        <code>${demo_url}</code>. Bước <code>lưu_text</code> lưu chữ trên trang thành biến.</li>
+    </ul>
+    <h3>Kích thước màn hình / trình duyệt</h3>
+    <p>Cột <b>Kích thước màn hình</b>: <code>1920x1080, 768x1024, 375x812</code> hoặc
+      <code>desktop, tablet, mobile</code> → TC chạy lại ở từng kích thước. Cột <b>Trình duyệt</b>:
+      <code>Edge, Chrome</code>.</p>
+    <h3>Danh sách Hành động</h3>
+    <div class="cols-wrap"><table class="kw" id="g-kw"></table></div>
+    <h3>Loại test &amp; cách test mặc định</h3>
+    <p class="muted">Nếu cột <b>Cách test</b> để trống, tool lấy theo loại test. Bước không có Hành động luôn là test tay.</p>
+    <div class="cols-wrap"><table class="kw" id="g-types"></table></div>
+  </div>
+</section>
+
+<!-- ======================================================== HỘP THOẠI -->
+<div class="modal" id="modal" hidden><div class="modal-box" id="modal-box"></div></div>
+<div class="modal manual" id="manual" hidden><div class="modal-box wide" id="manual-box"></div></div>
+<div class="lightbox" id="lightbox" hidden><img id="lightbox-img" alt=""><div class="lb-cap" id="lightbox-cap"></div></div>
+<div class="toast" id="toast"></div>
+<script src="/web/app.js"></script>
+<script src="/web/scan.js"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+build/
+dist/
+*.spec
+web/app.ico
+*.log
+running.json
+settings.json
+~$*.xlsx

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Đăng nhập — HR Demo</title>
+<link rel="stylesheet" href="demo.css">
+</head>
+<body class="login-page">
+<form class="login-box" id="form-login" novalidate>
+  <h1>HR Demo</h1>
+  <p class="sub">Web giả lập để tập viết test tự động</p>
+  <label for="email">Email</label>
+  <input id="email" name="email" type="email" placeholder="nhập email công ty" autocomplete="off">
+  <div class="err" id="err-email"></div>
+  <label for="password">Mật khẩu</label>
+  <input id="password" name="password" type="password" placeholder="nhập mật khẩu">
+  <div class="err" id="err-password"></div>
+  <label class="check"><input type="checkbox" id="remember"> Ghi nhớ đăng nhập</label>
+  <div class="err big" id="err-login" role="alert"></div>
+  <button type="submit" class="btn primary">Đăng nhập</button>
+  <p class="hint">Tài khoản demo: <b>admin@demo.vn</b> / <b>123456</b> — chỉ xem: <b>viewer@demo.vn</b> / <b>123456</b></p>
+</form>
+<script>
+const f = document.getElementById('form-login');
+f.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const email = document.getElementById('email').value.trim();
+  const pass = document.getElementById('password').value;
+  const ee = document.getElementById('err-email'), ep = document.getElementById('err-password'),
+        el = document.getElementById('err-login');
+  ee.textContent = ep.textContent = el.textContent = '';
+  let ok = true;
+  if (!email) { ee.textContent = 'Vui lòng nhập email'; ok = false; }
+  else if (!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(email)) { ee.textContent = 'Email không đúng định dạng'; ok = false; }
+  if (!pass) { ep.textContent = 'Vui lòng nhập mật khẩu'; ok = false; }
+  if (!ok) return;
+  setTimeout(() => {
+    const role = { 'admin@demo.vn': 'admin', 'viewer@demo.vn': 'viewer' }[email.toLowerCase()];
+    if (role && pass === '123456') {
+      document.cookie = 'hr_session=' + role + '; path=/'; sessionStorage.setItem('hr_user', role === 'admin' ? 'Admin' : 'Viewer');
+      location.href = 'don-hang.html';
+    } else {
+      el.textContent = 'Email hoặc mật khẩu không đúng';
+    }
+  }, 300);
+});
+</script>
+</body>
+</html>
